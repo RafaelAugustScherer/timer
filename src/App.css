@@ -1,38 +1,91 @@
+/* https://css-tricks.com/snippets/css/turn-off-number-input-spinners/ */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+body {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  background-color: black;
+  overflow: hidden;
+  height: 100vh;
+}
+
 .App {
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: 600;
+}
+
+video {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+
+.music-name {
+  color: #53EC88;
+  font-family: monospace, 'Courier New';
+}
+
+input {
+  color: #53EC88;  /* change [input cursor color] by this*/
+  text-shadow: 0px 0px 0px #53EC88; /* change [input font] by this*/
+  -webkit-text-fill-color: transparent;
+  background-color: transparent;
+  border: 2px solid #53EC88;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 20px;
+  margin-bottom: 30px;
+  padding: 10px 0;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+input:focus {
+  outline: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.timer {
+  color: #53EC88;
+  margin-top: 50px;
+  margin-bottom: 40px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.timer-input {
+  color: #53EC88;
+  margin-top: 40px;
 }
 
-.App-link {
-  color: #61dafb;
+.hidden {
+  visibility: hidden;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+span {
+  background-color: black;
+  border: 2px solid #53EC88;
+  border-radius: 10px;
+  color: #53EC88;
+  font-size: 14px;
+  margin: 20px;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+button {
+  background-color: black;
+  border: 0;
+  border-bottom: 2px solid #53EC88;
+  border-style: outset;
+  color: #53EC88;
+  cursor: pointer;
+  font-size: 25px;
+  margin: 0 20px;
 }
