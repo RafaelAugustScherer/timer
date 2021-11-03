@@ -74,6 +74,7 @@ input {
   margin-bottom: 30px;
   padding: 10px 0;
   text-align: center;
+  width: 60px;
 }
 
 input:focus {

@@ -22,9 +22,9 @@ class App extends Component {
     );
 
     this.state = {
-      hour: 0,
-      minute: 0,
-      second: 0,
+      hour: '00',
+      minute: '00',
+      second: '00',
       timer: null,
       isStarted: false,
       isPaused: false,
@@ -118,6 +118,7 @@ class App extends Component {
     }, 500);
 
     this.setState({ fieldsBlinker, isEnded: true });
+    this.pauseTrack();
   };
 
   endTimeoutVideo = () => this.setState({ isEnded: false })
@@ -126,6 +127,8 @@ class App extends Component {
 
   onChange = ({ target: { name, value } }) => {
     const CLOCK_MAX = 59;
+    value = Number(value);
+    value = value < 10 ? `0${value}` : value;
 
     value = String(value);
     if (value.length <= 2 && Number(value) <= CLOCK_MAX) {
@@ -158,6 +161,12 @@ class App extends Component {
       }
     });
   };
+
+  pauseTrack = () => {
+    const { soundtrack } = this.state;
+    soundtrack.forEach((music) => music.pause());
+  }
+
   render() {
     const { hour, minute, second, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
       this.state;
@@ -165,6 +174,7 @@ class App extends Component {
     const timeArr = [hour, minute, second].map((timeUnit) =>
       String(timeUnit).padStart(2, '0')
     );
+    
 
     // https://create-react-app.dev/docs/using-the-public-folder/
     const publicFolder = process.env.PUBLIC_URL;
@@ -183,11 +193,11 @@ class App extends Component {
         {!isStarted ? (
           <>
             <div className="timer-input">
-              <Input name="hour" value={hour} onChange={onChange} />
+              <Input name="hour" value={timeArr[0]} onChange={onChange} />
               {':'}
-              <Input name="minute" value={minute} onChange={onChange} />
+              <Input name="minute" value={timeArr[1]} onChange={onChange} />
               {':'}
-              <Input name="second" value={second} onChange={onChange} />
+              <Input name="second" value={timeArr[2]} onChange={onChange} />
             </div>
             <button type="button" onClick={startTimer}>
               <VscDebugStart />
