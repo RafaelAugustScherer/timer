@@ -27,6 +27,7 @@ body {
   position: absolute;
   bottom: 0;
   z-index: -1;
+  width: 1600px;
 }
 
 .pip-boy-screen {
@@ -35,9 +36,9 @@ body {
   align-items: center;
   position: absolute;
   bottom: 20px;
-  width: 400px;
-  margin-right: 80px;
-  height: 500px;
+  width: 500px;
+  margin-right: 100px;
+  height: 625px;
 }
 
 .intro-video {
@@ -51,7 +52,7 @@ body {
   z-index: -2;
   position: absolute;
   bottom: 30px;
-  width: 1200px;
+  width: 1600px;
 }
 
 .music-name {
@@ -67,7 +68,7 @@ input {
   background-color: transparent;
   border: 2px solid #53EC88;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
   margin: 0 20px;
   margin-bottom: 30px;
@@ -82,7 +83,7 @@ input:focus {
 .timer {
   color: #53EC88;
   margin-top: 50px;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
 .timer-input {
@@ -99,9 +100,9 @@ span {
   border: 2px solid #53EC88;
   border-radius: 10px;
   color: #53EC88;
-  font-size: 14px;
+  font-size: 20px;
   margin: 20px;
-  padding: 10px 15px;
+  padding: 11px 22px;
   text-align: center;
 }
 
@@ -112,6 +113,6 @@ button {
   border-style: outset;
   color: #53EC88;
   cursor: pointer;
-  font-size: 25px;
+  font-size: 40px;
   margin: 0 20px;
 }
