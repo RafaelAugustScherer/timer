@@ -12,7 +12,7 @@ function TimeoutVideo(props) {
 
   const publicFolder = process.env.PUBLIC_URL;
   return (
-    <video className="timeout-video" ref={vidRef} onEnded = { handleEnd }>
+    <video className="timeout-video" ref={vidRef} onEnded={ handleEnd } preload="auto">
       <source src={ `${publicFolder}/assets/explosion.mp4` } type="video/mp4" />
     </video>
   )
