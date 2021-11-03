@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import Input from './Input';
+import TimeoutVideo from './TimeoutVideo';
 import './App.css';
 
 const musics = [
@@ -15,8 +16,9 @@ class App extends Component {
   constructor() {
     super();
 
+    const publicFolder = process.env.PUBLIC_URL;
     const soundtrack = musics.map(
-      (musicName) => new Audio(`assets/soundtrack/${musicName}.mp3`)
+      (musicName) => new Audio(`${publicFolder}/assets/soundtrack/${musicName}.mp3`)
     );
 
     this.state = {
@@ -26,6 +28,7 @@ class App extends Component {
       timer: null,
       isStarted: false,
       isPaused: false,
+      isEnded: false,
       introEnded: false,
       soundtrack,
       musicName: 'Awaiting User',
@@ -88,7 +91,7 @@ class App extends Component {
 
     if (timeArr.every((timeUnit) => timeUnit === 0)) {
       clearInterval(timer);
-      this.blinkFields();
+      this.endTimer();
     } else if (minute === 0 && second === 0) {
       hour -= 1;
       minute = CLOCK_MAX;
@@ -107,15 +110,17 @@ class App extends Component {
     });
   };
 
-  blinkFields = () => {
+  endTimer = () => {
     const fieldsBlinker = setInterval(() => {
       this.setState(({ timerDisplay }) => ({
         timerDisplay: !timerDisplay,
       }));
-    }, 1000);
+    }, 500);
 
-    this.setState({ fieldsBlinker });
+    this.setState({ fieldsBlinker, isEnded: true });
   };
+
+  endTimeoutVideo = () => this.setState({ isEnded: false })
 
   endIntro = () => this.setState({ introEnded: true });
 
@@ -130,6 +135,7 @@ class App extends Component {
 
   playTrack = () => {
     const { soundtrack } = this.state;
+
     soundtrack.forEach((music, idx) => {
       music.volume = 0.5;
       if (idx === 0) {
@@ -153,18 +159,24 @@ class App extends Component {
     });
   };
   render() {
-    const { hour, minute, second, isStarted, isPaused, introEnded, musicName, timerDisplay } =
+    const { hour, minute, second, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
       this.state;
-    const { startTimer, pauseTimer, resetTimer, onChange, endIntro } = this;
+    const { startTimer, pauseTimer, resetTimer, onChange, endIntro, endTimeoutVideo } = this;
     const timeArr = [hour, minute, second].map((timeUnit) =>
       String(timeUnit).padStart(2, '0')
     );
 
+    // https://create-react-app.dev/docs/using-the-public-folder/
+    const publicFolder = process.env.PUBLIC_URL;
+
     return (
       <div className="App">
+        <img src={ `${publicFolder}/assets/pip-boy.png` } alt="Pip Boy" className="pip-boy-image" />
+        <TimeoutVideo canPlay={ isEnded } handleEnd={ () => endTimeoutVideo() } />
+        <div className="pip-boy-screen">
         {!introEnded && (
-          <video autoPlay muted onEnded={endIntro}>
-            <source src="assets/initialize.mp4" type="video/mp4" />
+          <video autoPlay muted onEnded={endIntro} className="intro-video">
+            <source src={ `${publicFolder}/assets/initialize.mp4` } type="video/mp4" />
           </video>
         )}
         <h2 className="music-name">{musicName}</h2>
@@ -195,17 +207,18 @@ class App extends Component {
                 <VscDebugPause />
               </button>
             ) : (
-              <>
+              <div>
                 <button type="button" onClick={startTimer}>
                   <VscDebugStart />
                 </button>
                 <button type="button" onClick={resetTimer}>
                   <VscDebugRestart />
                 </button>
-              </>
+              </div>
             )}
           </>
         )}
+        </div>
       </div>
     );
   }
