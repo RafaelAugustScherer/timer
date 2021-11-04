@@ -1,30 +1,22 @@
 import React, { Component } from 'react';
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
-import Input from './Input';
-import TimeoutVideo from './TimeoutVideo';
+import Input from './components/Input';
+import TimeoutVideo from './components/TimeoutVideo';
+import Soundtrack from './components/Soundtrack';
 import './App.css';
-
-const musics = [
-  "The Ink Spots - It's All Over But The Crying",
-  'Billie Holiday - Easy Living',
-  'Andrews Sisters & Danny Kaye - Civilization',
-  "The Ink Spots - I Don't Want To Set The World On Fire",
-  'Connie Allen - Rocket 69',
-];
 
 class App extends Component {
   constructor() {
     super();
 
-    const publicFolder = process.env.PUBLIC_URL;
-    const soundtrack = musics.map(
-      (musicName) => new Audio(`${publicFolder}/assets/soundtrack/${musicName}.mp3`)
-    );
+    const soundtrack = new Soundtrack(this.updateMusicName);
 
     this.state = {
-      hour: '00',
-      minute: '00',
-      second: '00',
+      time: {
+        hour: '00',
+        minute: '00',
+        second: '00',
+      },
       timer: null,
       isStarted: false,
       isPaused: false,
@@ -39,14 +31,16 @@ class App extends Component {
 
   componentWillUnmount() {
     const { soundtrack, timer, fieldsBlinker } = this.state;
+
+    soundtrack.pause();
+
     clearInterval(timer);
     clearInterval(fieldsBlinker);
-    soundtrack.forEach((music) => music.pause());
   }
 
   startTimer = () => {
     const { soundtrack } = this.state;
-    if (soundtrack.every(({ paused }) => paused)) this.playTrack();
+    if (!soundtrack.isPlaying()) soundtrack.play();
 
     const timer = setInterval(() => {
       this.timerHandler(timer);
@@ -84,12 +78,24 @@ class App extends Component {
     });
   };
 
+  endTimer = () => {
+    const { soundtrack } = this.state;
+    soundtrack.pause();
+
+    const fieldsBlinker = setInterval(() => {
+      this.setState(({ timerDisplay }) => ({
+        timerDisplay: !timerDisplay,
+      }));
+    }, 500);
+    this.setState({ fieldsBlinker, isEnded: true });
+  };
+
   timerHandler = (timer) => {
-    let { hour, minute, second } = this.state;
-    const timeArr = [Number(hour), Number(minute), Number(second)];
+    let { time } = this.state;
+    let [hour, minute, second] = Object.values(time).map((value) => Number(value));
     const CLOCK_MAX = 59;
 
-    if (timeArr.every((timeUnit) => timeUnit === 0)) {
+    if (hour === 0 && minute === 0 && second === 0) {
       clearInterval(timer);
       this.endTimer();
     } else if (minute === 0 && second === 0) {
@@ -103,132 +109,109 @@ class App extends Component {
       second -= 1;
     }
 
-    this.setState({
-      hour,
-      minute,
-      second,
-    });
+    time = Object.entries({ hour, minute, second }).reduce(
+      (acc, [timeUnit, value]) => ({
+        ...acc,
+        [timeUnit]: value < 10 ? `0${value}` : String(value),
+      }),
+      {}
+    );
+    this.setState({ time });
   };
-
-  endTimer = () => {
-    const fieldsBlinker = setInterval(() => {
-      this.setState(({ timerDisplay }) => ({
-        timerDisplay: !timerDisplay,
-      }));
-    }, 500);
-
-    this.setState({ fieldsBlinker, isEnded: true });
-    this.pauseTrack();
-  };
-
-  endTimeoutVideo = () => this.setState({ isEnded: false })
 
   endIntro = () => this.setState({ introEnded: true });
+  
+  endTimeoutVideo = () => this.setState({ isEnded: false });
+
 
   onChange = ({ target: { name, value } }) => {
+    const { time } = this.state;
     const CLOCK_MAX = 59;
-    value = Number(value);
-    value = value < 10 ? `0${value}` : value;
 
-    value = String(value);
+    value = Number(value);
+    value = value < 10 ? `0${value}` : String(value);
+
     if (value.length <= 2 && Number(value) <= CLOCK_MAX) {
-      this.setState({ [name]: Number(value) });
+      this.setState({
+        time: {
+          ...time,
+          [name]: value,
+        },
+      });
     }
   };
 
-  playTrack = () => {
-    const { soundtrack } = this.state;
-
-    soundtrack.forEach((music, idx) => {
-      music.volume = 0.5;
-      if (idx === 0) {
-        music.play();
-
-        const musicName = `${musics[idx]} ♪`;
-        this.setState({ musicName });
-      }
-      if (idx !== soundtrack.length - 1) {
-        music.addEventListener('ended', () => {
-          const music = soundtrack[idx + 1];
-          music.play();
-
-          const musicName = `${musics[idx + 1]} ♪`;
-          this.setState({ musicName });
-        });
-      }
-      else {
-        music.addEventListener('ended', () => this.playTrack());
-      }
-    });
-  };
-
-  pauseTrack = () => {
-    const { soundtrack } = this.state;
-    soundtrack.forEach((music) => music.pause());
-  }
+  updateMusicName = (musicName) => this.setState({ musicName });
 
   render() {
-    const { hour, minute, second, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
+    const { time, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
       this.state;
-    const { startTimer, pauseTimer, resetTimer, onChange, endIntro, endTimeoutVideo } = this;
-    const timeArr = [hour, minute, second].map((timeUnit) =>
-      String(timeUnit).padStart(2, '0')
-    );
-    
+    const { startTimer, pauseTimer, resetTimer, onChange, endIntro, endTimeoutVideo } =
+      this;
 
     // https://create-react-app.dev/docs/using-the-public-folder/
     const publicFolder = process.env.PUBLIC_URL;
 
     return (
       <div className="App">
-        <img src={ `${publicFolder}/assets/pip-boy.png` } alt="Pip Boy" className="pip-boy-image" />
-        <TimeoutVideo canPlay={ isEnded } handleEnd={ () => endTimeoutVideo() } />
+        <img
+          src={`${publicFolder}/assets/pip-boy.png`}
+          alt="Pip Boy"
+          className="pip-boy-image"
+        />
+        <TimeoutVideo canPlay={isEnded} handleEnd={endTimeoutVideo} />
         <div className="pip-boy-screen">
-        {!introEnded && (
-          <video autoPlay muted onEnded={endIntro} className="intro-video">
-            <source src={ `${publicFolder}/assets/initialize.mp4` } type="video/mp4" />
-          </video>
-        )}
-        <h2 className="music-name">{musicName}</h2>
-        {!isStarted ? (
-          <>
-            <div className="timer-input">
-              <Input name="hour" value={timeArr[0]} onChange={onChange} />
-              {':'}
-              <Input name="minute" value={timeArr[1]} onChange={onChange} />
-              {':'}
-              <Input name="second" value={timeArr[2]} onChange={onChange} />
+          {!introEnded && (
+            <video autoPlay muted onEnded={endIntro} className="intro-video">
+              <source src={`${publicFolder}/assets/initialize.mp4`} type="video/mp4" />
+            </video>
+          )}
+          <h2 className="music-name">{musicName}</h2>
+          {
+            <div
+              className={`timer${!isStarted ? '-input' : ''}${
+                !timerDisplay ? ' hidden' : ''
+              }`}
+            >
+              {Object.entries(time).map(([timeUnit, value], idx, arr) => (
+                <>
+                  {!isStarted ? (
+                    <Input
+                      key={timeUnit}
+                      name={timeUnit}
+                      value={value}
+                      onChange={onChange}
+                    />
+                  ) : (
+                    <span key={timeUnit}>{value}</span>
+                  )}
+                  {idx !== arr.length - 1 && ':'}
+                </>
+              ))}
             </div>
+          }
+          {!isStarted ? (
             <button type="button" onClick={startTimer}>
               <VscDebugStart />
             </button>
-          </>
-        ) : (
-          <>
-            <div className={`timer ${ !timerDisplay && 'hidden' }`}>
-              <span>{timeArr[0]}</span>
-              {':'}
-              <span>{timeArr[1]}</span>
-              {':'}
-              <span>{timeArr[2]}</span>
-            </div>
-            {!isPaused ? (
-              <button type="button" onClick={pauseTimer}>
-                <VscDebugPause />
+          ) : !isPaused ? (
+            <button type="button" onClick={pauseTimer}>
+              <VscDebugPause />
+            </button>
+          ) : (
+            <div>
+              <button type="button" onClick={startTimer}>
+                <VscDebugStart />
               </button>
-            ) : (
-              <div>
-                <button type="button" onClick={startTimer}>
-                  <VscDebugStart />
-                </button>
-                <button type="button" onClick={resetTimer}>
-                  <VscDebugRestart />
-                </button>
-              </div>
-            )}
-          </>
-        )}
+              <button type="button" onClick={resetTimer}>
+                <VscDebugRestart />
+              </button>
+            </div>
+          )}
         </div>
+        {
+          document.getElementById('page-title').innerText = `Pip Boy's Timer (${time.hour}:${time.minute}:${time.second})`
+        }
       </div>
     );
   }
