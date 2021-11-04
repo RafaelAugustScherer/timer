@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import Input from './components/Input';
 import TimeoutVideo from './components/TimeoutVideo';
@@ -146,12 +147,14 @@ class App extends Component {
   render() {
     const { time, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
       this.state;
+    const { hour, minute, second } = time;
     const { startTimer, pauseTimer, resetTimer, onChange, endIntro, endTimeoutVideo } =
       this;
 
     // https://create-react-app.dev/docs/using-the-public-folder/
     const publicFolder = process.env.PUBLIC_URL;
-
+    
+    document.title = `Pip Boy's Timer (${hour}:${minute}:${second})`
     return (
       <div className="App">
         <img
@@ -209,9 +212,6 @@ class App extends Component {
             </div>
           )}
         </div>
-        {
-          document.getElementById('page-title').innerText = `Pip Boy's Timer (${time.hour}:${time.minute}:${time.second})`
-        }
       </div>
     );
   }
