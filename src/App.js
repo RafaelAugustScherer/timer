@@ -88,7 +88,7 @@ class App extends Component {
         timerDisplay: !timerDisplay,
       }));
     }, 500);
-    this.setState({ fieldsBlinker, isEnded: true });
+    this.setState({ fieldsBlinker, isEnded: true, isStarted: false, isPaused: false });
   };
 
   timerHandler = (timer) => {
