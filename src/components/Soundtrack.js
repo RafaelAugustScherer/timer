@@ -11,7 +11,7 @@ class Soundtrack {
   constructor(updateMusicName) {
     this.updateMusicName = updateMusicName;
     this.musicName = musics[0];
-    this.music = new Audio(`${publicFolder}/assets/soundtrack/${musics[0]}.mp3`)
+    this.music = new Audio(`${publicFolder}/assets/soundtrack/${this.musicName}.mp3`);
     this.music.addEventListener('ended', () => this.handleNext());
     this.index = 0;
   }
@@ -36,8 +36,13 @@ class Soundtrack {
     this.musicName = musics[newIndex];
     this.updateMusicName(this.musicName);
 
-    this.music.src = `${publicFolder}/assets/soundtrack/${musics[newIndex]}`;
+    this.music.src = `${publicFolder}/assets/soundtrack/${musics[newIndex]}.mp3`;
     this.music.play();
+  }
+
+  changeMusic = (musicName) => {
+    this.musicName = musicName;
+    this.music.src = `${publicFolder}/assets/soundtrack/${musicName}.mp3`;
   }
 }
 

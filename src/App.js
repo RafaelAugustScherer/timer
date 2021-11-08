@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import Input from './components/Input';
 import TimeoutVideo from './components/TimeoutVideo';
@@ -122,16 +121,20 @@ class App extends Component {
 
   endIntro = () => this.setState({ introEnded: true });
   
-  endTimeoutVideo = () => this.setState({ isEnded: false });
+  endTimeoutVideo = () => {
+    const { fieldsBlinker } = this.state;
 
+    clearInterval(fieldsBlinker);
+    this.setState({ isEnded: false, fieldsBlinker: null, timerDisplay: true });
+  }
 
   onChange = ({ target: { name, value } }) => {
-    const { time } = this.state;
-    const CLOCK_MAX = 59;
+    const { time, soundtrack } = this.state;
+    const CLOCK_MAX = name === 'hour' ? 99 : 59;
 
     value = Number(value);
     value = value < 10 ? `0${value}` : String(value);
-
+    
     if (value.length <= 2 && Number(value) <= CLOCK_MAX) {
       this.setState({
         time: {
@@ -140,6 +143,10 @@ class App extends Component {
         },
       });
     }
+    if (name === 'hour' && value === '69') {
+      soundtrack.changeMusic('Connie Allen - Rocket 69');
+    }
+    console.log(name, value);
   };
 
   updateMusicName = (musicName) => this.setState({ musicName });
