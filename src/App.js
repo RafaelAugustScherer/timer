@@ -3,6 +3,7 @@ import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import Input from './components/Input';
 import TimeoutVideo from './components/TimeoutVideo';
 import Soundtrack from './components/Soundtrack';
+import MuteSound from './components/MuteSound';
 import './App.css';
 
 class App extends Component {
@@ -152,7 +153,7 @@ class App extends Component {
   updateMusicName = (musicName) => this.setState({ musicName });
 
   render() {
-    const { time, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay } =
+    const { time, isStarted, isPaused, isEnded, introEnded, musicName, timerDisplay, soundtrack } =
       this.state;
     const { hour, minute, second } = time;
     const { startTimer, pauseTimer, resetTimer, onChange, endIntro, endTimeoutVideo } =
@@ -165,12 +166,14 @@ class App extends Component {
     return (
       <div className="App">
         <img
+          key="pip-boy-image"
           src={`${publicFolder}/assets/pip-boy.png`}
           alt="Pip Boy"
           className="pip-boy-image"
         />
-        <TimeoutVideo canPlay={isEnded} handleEnd={endTimeoutVideo} />
-        <div className="pip-boy-screen">
+        <TimeoutVideo key="timeout-video" canPlay={isEnded} handleEnd={endTimeoutVideo} />
+        <div key="pip-boy-screen" className="pip-boy-screen">
+          <MuteSound music={ soundtrack.music } />
           {!introEnded && (
             <video autoPlay muted onEnded={endIntro} className="intro-video">
               <source src={`${publicFolder}/assets/initialize.mp4`} type="video/mp4" />
@@ -201,19 +204,19 @@ class App extends Component {
             </div>
           }
           {!isStarted ? (
-            <button type="button" onClick={startTimer}>
+            <button key="start-timer-button" type="button" onClick={startTimer}>
               <VscDebugStart />
             </button>
           ) : !isPaused ? (
-            <button type="button" onClick={pauseTimer}>
+            <button key="pause-timer-button" type="button" onClick={pauseTimer}>
               <VscDebugPause />
             </button>
           ) : (
             <div>
-              <button type="button" onClick={startTimer}>
+              <button key="start-timer-button" type="button" onClick={startTimer}>
                 <VscDebugStart />
               </button>
-              <button type="button" onClick={resetTimer}>
+              <button key="restart-timer-button" type="button" onClick={resetTimer}>
                 <VscDebugRestart />
               </button>
             </div>

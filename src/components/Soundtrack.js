@@ -22,9 +22,11 @@ class Soundtrack {
     updateMusicName(musicName);
   }
 
-  pause = () => {
-    this.music.pause();
-  }
+  pause = () => this.music.pause();
+
+  mute = () => this.music.muted = true;
+
+  unmute = () => this.music.muted = false;
 
   isPlaying = () => !this.music.paused
 
